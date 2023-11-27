@@ -5,6 +5,13 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
+
+	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
+)
+
+var (
+	dynamoClient dynamodbiface.DynamoDBAPI
 )
 
 func main() {
@@ -19,4 +26,5 @@ func main() {
 		return
 	}
 
+	dynamoClient = dynamodb.New(awsSession)
 }
