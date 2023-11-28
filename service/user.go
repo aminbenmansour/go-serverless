@@ -1,8 +1,11 @@
 package service
 
 import (
+	"encoding/json"
 	"errors"
 
+	"github.com/aminbenmansour/go-serverless/helpers"
+	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
@@ -12,6 +15,11 @@ import (
 var (
 	ErrorFailedToFetchRecord     = "Failed To Fetch Record"
 	ErrorFailedToUnmarshalRecord = "Failed To Unmarshal Record"
+	ErrorInvalidUserData         = "Invalid User Data"
+	ErrorInvalidEmail            = "Invalid Email"
+	ErrorUserAlreadyExists       = "User Already Exists"
+	ErrorCouldNotMarshalItem     = "Could Not Marshal Item"
+	ErrorCouldNotDynamoPutItem   = "Could Not DynamoDB Put Item"
 )
 
 type User struct {
@@ -65,9 +73,39 @@ func FetchUser(email, tableName string, dynamoClient dynamodbiface.DynamoDBAPI) 
 	return item, nil
 }
 
-func CreateUser() {
+func CreateUser(req events.APIGatewayProxyRequest, tableName string, dynamoClient dynamodbiface.DynamoDBAPI) (*User, error) {
+	var u User
 
+	if err := json.Unmarshal([]byte(req.Body), &u); err != nil {
+		return nil, errors.New(ErrorInvalidUserData)
+	}
+
+	if !helpers.IsEmailValid(u.Email) {
+		return nil, errors.New(ErrorInvalidEmail)
+	}
+
+	currentUser, _ := FetchUser(u.Email, tableName, dynamoClient)
+	if currentUser != nil && len(currentUser.Email) != 0 {
+		return nil, errors.New(ErrorUserAlreadyExists)
+	}
+
+	av, err := dynamodbattribute.MarshalMap(u)
+	if err != nil {
+		return nil, errors.New(ErrorCouldNotMarshalItem)
+	}
+
+	input := &dynamodb.PutItemInput{
+		Item:      av,
+		TableName: aws.String(tableName),
+	}
+
+	_, err = dynamoClient.PutItem(input)
+	if err != nil {
+		return nil, errors.New(ErrorCouldNotDynamoPutItem)
+	}
+	return &u, nil
 }
+
 func UpdateUser() {
 
 }
