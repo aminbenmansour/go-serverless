@@ -20,7 +20,23 @@ type User struct {
 	Lastname  string `json:"lastname"`
 }
 
-func FetchUsers() {
+func FetchUsers(tableName string, dynamoClient dynamodbiface.DynamoDBAPI) (*[]User, error) {
+	input := &dynamodb.ScanInput{
+		TableName: aws.String(tableName),
+	}
+
+	result, err := dynamoClient.Scan(input)
+	if err != nil {
+		return nil, errors.New(ErrorFailedToFetchRecord)
+	}
+
+	items := new([]User)
+	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, items)
+	if err != nil {
+		return nil, errors.New(ErrorFailedToUnmarshalRecord)
+	}
+
+	return items, nil
 
 }
 
