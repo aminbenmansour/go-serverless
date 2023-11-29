@@ -50,12 +50,29 @@ func CreateUser(req events.APIGatewayProxyRequest, tableName string, dynamoClien
 	return apiResponse(http.StatusCreated, result)
 }
 
-func UpdateUser(req events.APIGatewayProxyRequest, tableName string, dynamoClient dynamodbiface.DynamoDBAPI) {
-
+func UpdateUser(req events.APIGatewayProxyRequest, tableName string, dynamoClient dynamodbiface.DynamoDBAPI) (
+	*events.APIGatewayProxyResponse, error,
+) {
+	result, err := service.UpdateUser(req, tableName, dynamoClient)
+	if err != nil {
+		return apiResponse(http.StatusBadRequest, ErrorBody{
+			aws.String(err.Error()),
+		})
+	}
+	return apiResponse(http.StatusOK, result)
 }
 
-func DeleteUser(req events.APIGatewayProxyRequest, tableName string, dynamoClient dynamodbiface.DynamoDBAPI) {
+func DeleteUser(req events.APIGatewayProxyRequest, tableName string, dynamoClient dynamodbiface.DynamoDBAPI) (
+	*events.APIGatewayProxyResponse, error,
+) {
+	err := service.DeleteUser(req, tableName, dynamoClient)
 
+	if err != nil {
+		return apiResponse(http.StatusBadRequest, ErrorBody{
+			aws.String(err.Error()),
+		})
+	}
+	return apiResponse(http.StatusOK, nil)
 }
 
 func UnhandledMethod() {
