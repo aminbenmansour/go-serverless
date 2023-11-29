@@ -21,6 +21,7 @@ var (
 	ErrorUserDoesNotExist        = "User Does Not Exist"
 	ErrorCouldNotMarshalItem     = "Could Not Marshal Item"
 	ErrorCouldNotDynamoPutItem   = "Could Not DynamoDB Put Item"
+	ErrorCouldNotDeleteItem      = "Could Not Delete Item"
 )
 
 type User struct {
@@ -135,6 +136,21 @@ func UpdateUser(req events.APIGatewayProxyRequest, tableName string, dynamoClien
 	return &u, nil
 }
 
-func DeleteUser() {
+func DeleteUser(req events.APIGatewayProxyRequest, tableName string, dynaClient dynamodbiface.DynamoDBAPI) error {
 
+	email := req.QueryStringParameters["email"]
+	input := &dynamodb.DeleteItemInput{
+		Key: map[string]*dynamodb.AttributeValue{
+			"email": {
+				S: aws.String(email),
+			},
+		},
+		TableName: aws.String(tableName),
+	}
+	_, err := dynaClient.DeleteItem(input)
+	if err != nil {
+		return errors.New(ErrorCouldNotDeleteItem)
+	}
+
+	return nil
 }
