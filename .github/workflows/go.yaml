@@ -32,4 +32,4 @@ jobs:
     #   run: go test -v lambda/...
 
     - name: Zipping executable
-      run: zip -jrm lambda/build/go-serverless.zip lambda/build/go-serverless
+      run: zip -jrm lambda/build/go-serverless.zip lambda/go-serverless
