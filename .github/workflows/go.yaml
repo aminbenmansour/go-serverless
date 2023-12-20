@@ -27,6 +27,9 @@ jobs:
 
     - name: Build
       run: go build -v lambda/...
+    
+    - name: List all files
+      run: tree
 
     # - name: Test
     #   run: go test -v lambda/...
