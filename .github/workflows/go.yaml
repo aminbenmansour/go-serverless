@@ -25,9 +25,6 @@ jobs:
       with:
         go-version: ${{ matrix.go-version }}
 
-    - name: Install dependencies
-      run: cd lambda;go get .
-
     - name: Build
       run: go build -v lambda/...
 
