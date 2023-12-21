@@ -1,0 +1,29 @@
+name: Automating build, tests and lambda packaging for Golang 
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21.1'
+
+    - name: Build
+      run: go build -C lambda -o build/go-serverless -v
+
+    # - name: Test
+    #   run: go test -v lambda/...
+
+    - name: Zipping executable
+      run: zip -jrm lambda/build/go-serverless.zip lambda/build/go-serverless
