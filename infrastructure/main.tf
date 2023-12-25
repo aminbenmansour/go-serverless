@@ -1,4 +1,12 @@
 terraform {
+  backend "remote" {
+    organization = "am1n-org"
+
+    workspaces {
+      name = "aws-serverless"
+    }
+  }
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
