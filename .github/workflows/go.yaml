@@ -4,11 +4,11 @@ on:
   push:
     branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
-
+    branches:
+      - dd
 jobs:
-
   build:
+    if: ! startsWith(github.head_ref, 'refs/heads/iac/')
     runs-on: ubuntu-latest
 
     steps:
@@ -25,5 +25,6 @@ jobs:
     # - name: Test
     #   run: go test -v lambda/...
 
-    - name: Zipping executable
-      run: zip -jrm lambda/build/go-serverless.zip lambda/build/go-serverless
+    # this step will be done on the IaC level
+    # - name: Zipping executable
+    #   run: zip -jrm lambda/build/go-serverless.zip lambda/build/go-serverless
