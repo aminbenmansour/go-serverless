@@ -2,8 +2,8 @@ name: "Terraform Plan"
 
 on:
   pull_request:
-    branches:
-      - "iac/*"
+    paths:
+      - "**.tf"
 
 env:
   TF_CLOUD_ORGANIZATION: "am1n-org"
