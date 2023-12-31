@@ -4,8 +4,7 @@ on:
   push:
     branches: [ "main" ]
   pull_request:
-    branches:
-      - dd
+    
 jobs:
   build:
     if: ! startsWith(github.head_ref, 'refs/heads/iac/')
